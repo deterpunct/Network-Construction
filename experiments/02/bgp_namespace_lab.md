@@ -223,7 +223,7 @@ Start `bgpd` inside each namespace:
 
 ```bash
 for ns in edge1 edge2 isp1 isp2; do
-  sudo ip netns exec "$ns" bgpd \
+  sudo ip netns exec "$ns" /usr/lib/frr/bgpd \
     -d \
     -f /etc/netns/$ns/frr/bgpd.conf \
     -i /tmp/$ns-bgpd.pid \
@@ -231,6 +231,30 @@ for ns in edge1 edge2 isp1 isp2; do
     -A 127.0.0.1
 done
 ```
+
+before this, make sure it's not running
+
+```bash
+for ns in edge1 edge2 isp1 isp2; do
+    sudo ip netns exec "$ns" pkill -9 bgpd 2>/dev/null
+    sudo rm -f /tmp/$ns-bgpd.pid 2>/dev/null
+done
+
+# 等待一下
+sleep 2
+
+# 确认所有bgpd进程都已停止
+for ns in edge1 edge2 isp1 isp2; do
+    echo -n "$ns bgpd: "
+    if sudo ip netns exec "$ns" pgrep bgpd >/dev/null 2>&1; then
+        echo "STILL RUNNING - forcing kill"
+        sudo ip netns exec "$ns" pkill -9 bgpd
+    else
+        echo "stopped"
+    fi
+done
+```bash
+
 
 ## Step 4: Verify iBGP/eBGP Sessions and Policy
 - Confirm session establishment:

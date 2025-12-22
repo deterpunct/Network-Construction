@@ -40,15 +40,30 @@ experiments/05/
 
 ## 5. 基线测试阶段
 1. **吞吐/延迟基线**
+
+   ```bash
+   # 清理所有 iperf 相关进程
+   sudo pkill -9 iperf3
+   sudo pkill -9 iperf
+
+   # 清理可能占用的端口
+   sudo fuser -k 5201/tcp 2>/dev/null
+   sudo fuser -k 5202/tcp 2>/dev/null
+   sudo fuser -k 5203/tcp 2>/dev/null
+
+   # 等待清理完成
+   sleep 2
+   ```
+   
    ```bash
    ip netns exec ns1 iperf3 -s -D
    ip netns exec ns3 iperf3 -c 10.0.23.2 -t 20 -i 2
    ip netns exec ns5 ping -c 50 -i 0.2 10.0.12.1 > logs/ping_baseline_ns5.txt
    ```
-2. **记录统计**  
+3. **记录统计**  
    - 计算 p50/p90/p99 RTT。  
    - 保存 `iperf3` 带宽和重传数。
-3. **清理临时服务**  
+4. **清理临时服务**  
    ```bash
    ip netns exec ns1 pkill iperf3 || true
    ```

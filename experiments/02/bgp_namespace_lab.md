@@ -257,6 +257,18 @@ done
 
 
 ## Step 4: Verify iBGP/eBGP Sessions and Policy
+
+-check BGP
+
+```bash
+# 查看每个路由器的 BGP 配置
+for ns in edge1 edge2 isp1 isp2; do
+    echo "=== $ns BGP Configuration ==="
+    sudo ip netns exec "$ns" vtysh -c "show running-config" | grep -A 50 "router bgp"
+    echo
+done
+```
+
 - Confirm session establishment:
 
   ```bash

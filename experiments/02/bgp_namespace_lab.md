@@ -253,7 +253,7 @@ for ns in edge1 edge2 isp1 isp2; do
         echo "stopped"
     fi
 done
-```bash
+```
 
 
 ## Step 4: Verify iBGP/eBGP Sessions and Policy

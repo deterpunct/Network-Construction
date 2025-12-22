@@ -222,6 +222,19 @@ router bgp 65002
 Start `bgpd` inside each namespace:
 
 ```bash
+#用 screen 防止全部进程不相互隔离
+for ns in edge1 edge2 isp1 isp2; do
+    echo "在screen中启动 $ns bgpd..."
+    sudo ip netns exec "$ns" screen -dmS bgpd-$ns /usr/lib/frr/bgpd \
+        -f /etc/netns/$ns/frr/bgpd.conf \
+        -i /tmp/$ns-bgpd.pid \
+        -z /tmp/$ns-zebra.sock \
+        -A 127.0.0.1
+    sleep 1
+done
+```
+
+```bash
 for ns in edge1 edge2 isp1 isp2; do
   sudo ip netns exec "$ns" /usr/lib/frr/bgpd \
     -d \

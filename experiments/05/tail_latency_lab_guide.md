@@ -68,8 +68,29 @@ experiments/05/
    ```
    
 2. **记录统计**  
-   - 计算 p50/p90/p99 RTT。  
-   - 保存 `iperf3` 带宽和重传数。
+   - 计算 p50/p90/p99 RTT。
+     
+     ```bash
+     # 1. 提取所有 RTT 时间
+     grep "time=" logs/ping_baseline_ns5.txt | awk -F'time=' '{print $2}' | awk '{print $1}' > rtt_times.txt
+     # 2. 排序并计算百分位数
+     sort -n rtt_times.txt > sorted_rtt.txt
+     TOTAL=$(wc -l < sorted_rtt.txt)      
+     # P50 (中位数)
+     P50_LINE=$((TOTAL * 50 / 100))
+     P50=$(sed -n "${P50_LINE}p" sorted_rtt.txt)     
+     # P90 (90百分位)
+     P90_LINE=$((TOTAL * 90 / 100))
+     P90=$(sed -n "${P90_LINE}p" sorted_rtt.txt)   
+     # P99 (99百分位)
+     P99_LINE=$((TOTAL * 99 / 100))
+     P99=$(sed -n "${P99_LINE}p" sorted_rtt.txt)     
+     echo "P50 RTT: $P50 ms"
+     echo "P90 RTT: $P90 ms"
+     echo "P99 RTT: $P99 ms"
+     ```
+     
+   - 保存 `iperf3` 带宽和重传数-- 取最后一行的结果，重传数取决于掉包率。
 3. **清理临时服务**  
    ```bash
    ip netns exec ns1 pkill iperf3 || true

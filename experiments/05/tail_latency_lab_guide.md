@@ -65,8 +65,8 @@ experiments/05/
    
    pkill iperf 2>/dev/null
    echo "=== 完成 ==="
-'
    ```
+   
 2. **记录统计**  
    - 计算 p50/p90/p99 RTT。  
    - 保存 `iperf3` 带宽和重传数。

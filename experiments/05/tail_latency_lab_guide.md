@@ -42,7 +42,7 @@ experiments/05/
 1. **吞吐/延迟基线**
 
    ```bash
-  sudo bash -c '
+   sudo bash -c '
    # 清理
    pkill -9 iperf 2>/dev/null
    pkill -9 iperf3 2>/dev/null

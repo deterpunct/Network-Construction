@@ -161,6 +161,47 @@ experiments/05/
    watch -n 30 'ip netns exec ns2 tc qdisc change dev veth23a root netem delay 5ms 10ms 30% distribution normal'
    ```
 
+   ```bash
+   sudo bash -c '
+   # 清理
+   pkill -9 iperf 2>/dev/null
+   pkill -9 iperf3 2>/dev/null
+   fuser -k 5001/tcp 2>/dev/null
+   sleep 2
+   
+   echo "=== 测试前链路状态 ==="
+   ip netns exec ns2 ethtool -S veth23a | head > logs/before_ethtool_change.txt
+   ip netns exec ns3 traceroute -n 10.0.12.1 > logs/before_traceroute_change.txt
+   
+   # 运行
+   mkdir -p logs
+   echo "=== 启动服务器 (ns1:10.0.12.1) ==="
+   ip netns exec ns1 iperf -s &
+   SERVER_PID=$!
+   sleep 3
+   
+   echo "=== 带宽测试 (ns3 -> ns1) ==="
+   # 重要：连接 ns1 的 IP，不是 ns3 自己的 IP
+   ip netns exec ns3 iperf -c 10.0.12.1 -t 20 -i 2
+   
+   echo "=== Ping测试 (ns3 -> ns1) ==="
+   ip netns exec ns3 ping -c 50 -i 0.2 10.0.12.1 > logs/ping_tail_ns5_change.txt
+   
+   echo "=== 收集TCP统计 ==="
+   nstat -az | grep -E "RetransSegs|InErrors" > logs/tcp_stats_change.txt
+   
+   echo "=== 测试后链路状态 ==="
+   ip netns exec ns2 ethtool -S veth23a | head > logs/after_ethtool_change.txt
+   ip netns exec ns3 traceroute -n 10.0.12.1 > logs/after_traceroute_change.txt
+   
+   echo "=== 清理 ==="
+   pkill iperf 2>/dev/null
+   
+   echo "=== 测试完成 ==="
+   '
+   ```
+
+
 ## 7. 观测分层清单
 - **网络层**：`tc qdisc show`, `ip -s link`, `nstat`, `ethtool -S`, `tcpdump -i veth23a -nn`.
 - **系统层**：`ip netns exec <ns> top`, `perf sched latency`.

@@ -117,12 +117,11 @@ experiments/05/
    pkill -9 iperf3 2>/dev/null
    fuser -k 5001/tcp 2>/dev/null
    sleep 2
-
+   
    echo "=== 测试前链路状态 ==="
    ip netns exec ns2 ethtool -S veth23a | head > logs/before_ethtool.txt
    ip netns exec ns3 traceroute -n 10.0.12.1 > logs/before_traceroute.txt
-
-
+   
    # 运行
    mkdir -p logs
    echo "=== 启动服务器 (ns1:10.0.12.1) ==="
@@ -137,11 +136,18 @@ experiments/05/
    echo "=== Ping测试 (ns5 -> ns1) ==="
    ip netns exec ns5 ping -c 50 -i 0.2 10.0.12.1 > logs/ping_tail_ns5.txt
    
-   nstat -az | grep -E "RetransSegs|InErrors
-
+   echo "=== 收集TCP统计 ==="
+   nstat -az | grep -E "RetransSegs|InErrors" > logs/tcp_stats.txt
+   
    echo "=== 测试后链路状态 ==="
    ip netns exec ns2 ethtool -S veth23a | head > logs/after_ethtool.txt
    ip netns exec ns3 traceroute -n 10.0.12.1 > logs/after_traceroute.txt
+   
+   echo "=== 清理 ==="
+   pkill iperf 2>/dev/null
+   
+   echo "=== 测试完成 ==="
+   '
    
    ```
    

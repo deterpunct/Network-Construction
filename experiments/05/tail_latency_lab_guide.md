@@ -135,7 +135,7 @@ experiments/05/
    ip netns exec ns3 iperf -c 10.0.12.1 -t 20 -i 2
    
    echo "=== Ping测试 (ns5 -> ns1) ==="
-   ip netns exec ns5 ping -c 50 -i 0.2 10.0.12.1 > logs/ping_baseline_ns5.txt
+   ip netns exec ns5 ping -c 50 -i 0.2 10.0.12.1 > logs/ping_tail_ns5.txt
    
    nstat -az | grep -E "RetransSegs|InErrors
 

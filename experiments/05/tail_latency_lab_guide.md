@@ -93,7 +93,7 @@ experiments/05/
    - 保存 `iperf3` 带宽和重传数-- 取最后一行的结果，重传数取决于掉包率。
 3. **清理临时服务**  
    ```bash
-   ip netns exec ns1 pkill iperf3 || true
+   ip netns exec ns1 pkill iperf2 || true
    ```
 
 ## 6. 长尾注入与观测
@@ -109,12 +109,41 @@ experiments/05/
 3. **重复基线测试**  
    - `iperf3` + `ping` 再跑一次，文件命名 `logs/ping_tail_ns5.txt`。  
    - 运行 `nstat -az | grep -E "RetransSegs|InErrors"`.
-4. **采集链路信息**  
+  
+     ```bash
+   sudo bash -c '
+   # 清理
+   pkill -9 iperf 2>/dev/null
+   pkill -9 iperf3 2>/dev/null
+   fuser -k 5001/tcp 2>/dev/null
+   sleep 2
+   
+   # 运行
+   mkdir -p logs
+   echo "=== 启动服务器 (ns1:10.0.12.1) ==="
+   ip netns exec ns1 iperf -s &
+   SERVER_PID=$!
+   sleep 3
+   
+   echo "=== 带宽测试 (ns3 -> ns1) ==="
+   # 重要：连接 ns1 的 IP，不是 ns3 自己的 IP
+   ip netns exec ns3 iperf -c 10.0.12.1 -t 20 -i 2
+   
+   echo "=== Ping测试 (ns5 -> ns1) ==="
+   ip netns exec ns5 ping -c 50 -i 0.2 10.0.12.1 > logs/ping_baseline_ns5.txt
+   
+   pkill iperf 2>/dev/null
+   echo "=== 完成 ==="
+
+   nstat -az | grep -E "RetransSegs|InErrors
+   ```
+   
+5. **采集链路信息**  
    ```bash
    ip netns exec ns2 ethtool -S veth23a | head
    ip netns exec ns3 traceroute -n 10.0.12.1
    ```
-5. **可选：引入动态尾部**  
+6. **可选：引入动态尾部**  
    ```bash
    watch -n 30 'ip netns exec ns2 tc qdisc change dev veth23a root netem delay 5ms 10ms 30% distribution normal'
    ```

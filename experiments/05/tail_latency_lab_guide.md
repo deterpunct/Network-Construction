@@ -128,9 +128,14 @@ experiments/05/
 ## 8. 报告要求
 1. 描述拓扑、注入参数、命名空间角色。
 2. 提供至少一张 RTT 百分位图或表（可用 `python -m pandas` 生成）。
-3. 对选定计算场景给出“无 tail vs 有 tail”的 p99/完成时间对比及原因分析。
-4. 附上关键命令与输出（`ipc`, `tc`, `spark`/`hadoop`/`torch` 日志摘要）。
-5. 说明一次成功往返测试的命令与结果。
+   
+   ```bash
+   python3 rtt_handler.py
+   ```
+   
+4. 对选定计算场景给出“无 tail vs 有 tail”的 p99/完成时间对比及原因分析。
+5. 附上关键命令与输出（`ipc`, `tc`, `spark`/`hadoop`/`torch` 日志摘要）。
+6. 说明一次成功往返测试的命令与结果。
 
 ## 9. 清理与回滚
 ```bash

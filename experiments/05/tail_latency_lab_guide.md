@@ -110,7 +110,7 @@ experiments/05/
    - `iperf3` + `ping` 再跑一次，文件命名 `logs/ping_tail_ns5.txt`。  
    - 运行 `nstat -az | grep -E "RetransSegs|InErrors"`.
   
-     ```bash
+   ```bash
    sudo bash -c '
    # 清理
    pkill -9 iperf 2>/dev/null

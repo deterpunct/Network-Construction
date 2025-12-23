@@ -61,7 +61,7 @@ experiments/05/
    ip netns exec ns3 iperf -c 10.0.12.1 -t 20 -i 2
    
    echo "=== Ping测试 (ns5 -> ns1) ==="
-   ip netns exec ns5 ping -c 50 -i 0.2 10.0.12.1 > logs/ping_baseline_ns5.txt
+   ip netns exec ns3 ping -c 50 -i 0.2 10.0.12.1 > logs/ping_baseline_ns5.txt
    
    pkill iperf 2>/dev/null
    echo "=== 完成 ==="
@@ -133,8 +133,8 @@ experiments/05/
    # 重要：连接 ns1 的 IP，不是 ns3 自己的 IP
    ip netns exec ns3 iperf -c 10.0.12.1 -t 20 -i 2
    
-   echo "=== Ping测试 (ns5 -> ns1) ==="
-   ip netns exec ns5 ping -c 50 -i 0.2 10.0.12.1 > logs/ping_tail_ns5.txt
+   echo "=== Ping测试 (ns3 -> ns1) ==="
+   ip netns exec ns3 ping -c 50 -i 0.2 10.0.12.1 > logs/ping_tail_ns5.txt
    
    echo "=== 收集TCP统计 ==="
    nstat -az | grep -E "RetransSegs|InErrors" > logs/tcp_stats.txt
